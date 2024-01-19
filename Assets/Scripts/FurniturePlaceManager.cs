@@ -110,7 +110,7 @@ public class FurniturePlaceManager : MonoBehaviour
                 if (IsObjectAtPosition(hitList[0].pose.position))
                 {
                     // Instantiate the GameObject
-                    textElement.text += "Clicked on a spawned object!";
+                    textElement.text += "\nClicked on a spawned object!";
                     SaveMetamorphData("\nClicked on a spawned object! " + obj_num, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
                 }
                 else
@@ -122,7 +122,7 @@ public class FurniturePlaceManager : MonoBehaviour
                     {
                         if (IsPointInsidePlane(hitList[0].pose.position, plane.transform) == true)
                         {
-                            textElement.text += "Within boundary of the plane";
+                            textElement.text += "\nWithin boundary of the plane";
                             SaveMetamorphData("\nWithin boundary of the plane." + obj_num, hitList[0].pose.position, new Vector3(0,0,0));
                             is_inside = true;
                             break;
@@ -131,7 +131,7 @@ public class FurniturePlaceManager : MonoBehaviour
 
                     if (!is_inside)
                     {
-                        textElement.text += "Outside of detedplane.";
+                        textElement.text += "\nOutside of detedplane.";
                         SaveMetamorphData("\nOutside of detedplane." + obj_num, hitList[0].pose.position, new Vector3(0, 0, 0));
                     }
 
@@ -156,7 +156,9 @@ public class FurniturePlaceManager : MonoBehaviour
                         _object.transform.localScale = new Vector3((float)0.3, (float)0.3, (float)0.3);
                     }
 
-                    
+                        Vector3 currentViewpoint = Camera.main.transform.position; // Current camera position as the viewpoint
+                        textElement.text += $"\n{currentViewpoint}";
+                        CheckVisibleObjectsFromViewpoint(currentViewpoint);
 
 
 
@@ -166,19 +168,20 @@ public class FurniturePlaceManager : MonoBehaviour
 
 
 
-                    
-                    
+
+
+
 
                         // interaction metamorphic test
                         //textElement.text += _object.transform.position == hitList[0].pose.position ?  "\nraycast and placement is in same position.(Passed)" : "\nNot in same position(Fail)";
                         if (_object.transform.position == hitList[0].pose.position)
                         {
-                            textElement.text += "raycast and placement is in same position.";
+                            textElement.text += "\nraycast and placement is in same position.";
                             SaveMetamorphData("\nraycast and placement is in same position. " + obj_num, _object.transform.position, hitList[0].pose.position);
                         }
                         else
                         {
-                            textElement.text += "Not in same position";
+                            textElement.text += "\nNot in same position";
                             SaveMetamorphData("\nNot in same position" + obj_num, _object.transform.position, hitList[0].pose.position);
                         }
 
@@ -189,15 +192,17 @@ public class FurniturePlaceManager : MonoBehaviour
                             //textElement.text += _object.name == object_static_name+"(Clone)" ? "\nCorrect object intantiated.(Passed)" : "\nWrong Object Instantiate(Fail)";
                             if (_object.name == object_static_name + "(Clone)")
                             {
-                                textElement.text += "Correct object intantiated.";
+                                textElement.text += "\nCorrect object intantiated.";
                                 SaveMetamorphDataName("\nCorrect object intantiated." + obj_num, _object.name, object_static_name);
                             }
                             else
                             {
-                                textElement.text += "Wrong Object Instantiate.";
+                                textElement.text += "\nWrong Object Instantiate.";
                                 SaveMetamorphDataName("\nWrong Object Instantiate" + obj_num, _object.name, object_static_name);
                             }
                         }
+
+
                     }
 
 
@@ -351,5 +356,45 @@ public class FurniturePlaceManager : MonoBehaviour
         
         
         //textElement.text += $"\nwill spawn {furniture.name} {extraspawnobject.Count}";
+    }
+
+    private void CheckVisibleObjectsFromViewpoint(Vector3 viewpoint)
+    {
+        textElement.text += "\nInside CheckVisibleObjectsFromViewpoint";
+
+        textElement.text += $"\n{extraspawnobject.Count}";
+        
+        foreach (var obj in extraspawnobject)
+        {
+            textElement.text += "\nInside the for loop of checkvisible";
+            if (IsObjectVisibleFromViewpoint(obj, viewpoint))
+            {
+                // This object is visible from the viewpoint
+                // Perform your desired action, e.g., log visibility or update UI
+                // Debug.Log("Object " + obj.name + " is visible from viewpoint.");
+                textElement.text += "\nCan see object";
+
+                SaveMetamorphDataName("\nCan see object" + obj_num, "", "");
+            }
+        }
+    }
+
+    private bool IsObjectVisibleFromViewpoint(GameObject obj, Vector3 viewpoint)
+    {
+        RaycastHit hit;
+        Vector3 direction = obj.transform.position - viewpoint;
+        textElement.text += "\nInside IsObjectVisibleFromViewpoint";
+        if (Physics.Raycast(viewpoint, direction, out hit))
+        {
+            textElement.text += "\nInside 1st if";
+            if (hit.collider.gameObject == obj)
+            {
+                textElement.text += "\nInside 2nd if";
+                // Object is visible (not obstructed)
+                return true;
+            }
+        }
+        // Object is not visible (obstructed or too far)
+        return false;
     }
 }
