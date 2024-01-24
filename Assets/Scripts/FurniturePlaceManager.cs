@@ -17,13 +17,21 @@ public class FurniturePlaceManager : MonoBehaviour
     public XROrigin sessionOrigin;
     public ARRaycastManager raycastManager;
     public ARPlaneManager planeManager;
-    
+    public ARLightEstimationData lightEstimationData;
+    public ARCameraManager arCameraManager;
+
+
+
 
 
     //public string textValue;
     public Text textElement;
     private List<GameObject> extraspawnobject=new List<GameObject>();
     private List<ARRaycastHit> hitList = new List<ARRaycastHit>();
+
+    
+
+
     private List<Vector3> BoundaryPoints;
     private string object_static_name = "";
     private int obj_num = 0;
@@ -45,6 +53,7 @@ public class FurniturePlaceManager : MonoBehaviour
 
     private void Update()
     {
+        
         Touch touch = Input.GetTouch(0);
         if (touch.phase == TouchPhase.Began)
         {
@@ -110,7 +119,7 @@ public class FurniturePlaceManager : MonoBehaviour
                 if (IsObjectAtPosition(hitList[0].pose.position))
                 {
                     // Instantiate the GameObject
-                    textElement.text += "\nClicked on a spawned object!";
+                    //textElement.text += "\nClicked on a spawned object!";
                     SaveMetamorphData("\nClicked on a spawned object! " + obj_num, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
                 }
                 else
@@ -122,7 +131,7 @@ public class FurniturePlaceManager : MonoBehaviour
                     {
                         if (IsPointInsidePlane(hitList[0].pose.position, plane.transform) == true)
                         {
-                            textElement.text += "\nWithin boundary of the plane";
+                            //textElement.text += "\nWithin boundary of the plane";
                             SaveMetamorphData("\nWithin boundary of the plane." + obj_num, hitList[0].pose.position, new Vector3(0,0,0));
                             is_inside = true;
                             break;
@@ -131,7 +140,7 @@ public class FurniturePlaceManager : MonoBehaviour
 
                     if (!is_inside)
                     {
-                        textElement.text += "\nOutside of detedplane.";
+                        //textElement.text += "\nOutside of detedplane.";
                         SaveMetamorphData("\nOutside of detedplane." + obj_num, hitList[0].pose.position, new Vector3(0, 0, 0));
                     }
 
@@ -145,19 +154,36 @@ public class FurniturePlaceManager : MonoBehaviour
                     int rand_val = Random.Range(0, 2);
                     if (rand_val == 0)
                     {
-                        _object.transform.position = hitList[0].pose.position + new Vector3(0.0f, 1.0f, 0.5f); //fail cases simulation
+                            _object.transform.position = hitList[0].pose.position;//+ new Vector3(0.0f, 1.0f, 0.5f); //fail cases simulation
                         _object.tag = "EnemyAnimal";
-                        _object.transform.localScale = new Vector3((float)0.3, (float)0.3, (float)0.3);
+
+                            DynamicScaler scaler = _object.AddComponent<DynamicScaler>();
+                            scaler.scaleFactor = 0.2f;
+
+                            _object.transform.rotation = Quaternion.Euler(0, Random.Range(60, 360), 0); // Random Y rotation, but consistent up direction
+                            textElement.text += $"\nwhen instantiate {_object.transform.rotation}";
+                            //     textElement.text += $"\nwhen instantiate {_object.name}";
+                            //_object.name = _object.name + obj_num.ToString();
+
+
+                            extraspawnobject.Add( _object );
                     }
                     else
                     {
                         _object.transform.position = hitList[0].pose.position; //pass case simulation
                         _object.tag = "EnemyAnimal";
-                        _object.transform.localScale = new Vector3((float)0.3, (float)0.3, (float)0.3);
-                    }
+                            DynamicScaler scaler = _object.AddComponent<DynamicScaler>();
+                            scaler.scaleFactor = 0.2f;
+                            _object.transform.rotation = Quaternion.Euler(0, Random.Range(60, 360), 0); // Random Y rotation, but consistent up direction
+                            textElement.text += $"\nwhen instantiate {_object.transform.rotation}";
+                           // textElement.text += $"\nwhen instantiate {_object.name}";
+                            //_object.name = _object.name + obj_num.ToString();
+                            
+                            extraspawnobject.Add(_object);
+                        }
 
                         Vector3 currentViewpoint = Camera.main.transform.position; // Current camera position as the viewpoint
-                        textElement.text += $"\n{currentViewpoint}";
+                        //textElement.text += $"\n{currentViewpoint}";
                         CheckVisibleObjectsFromViewpoint(currentViewpoint);
 
 
@@ -176,12 +202,12 @@ public class FurniturePlaceManager : MonoBehaviour
                         //textElement.text += _object.transform.position == hitList[0].pose.position ?  "\nraycast and placement is in same position.(Passed)" : "\nNot in same position(Fail)";
                         if (_object.transform.position == hitList[0].pose.position)
                         {
-                            textElement.text += "\nraycast and placement is in same position.";
+                          //  textElement.text += "\nraycast and placement is in same position.";
                             SaveMetamorphData("\nraycast and placement is in same position. " + obj_num, _object.transform.position, hitList[0].pose.position);
                         }
                         else
                         {
-                            textElement.text += "\nNot in same position";
+                           // textElement.text += "\nNot in same position";
                             SaveMetamorphData("\nNot in same position" + obj_num, _object.transform.position, hitList[0].pose.position);
                         }
 
@@ -192,12 +218,12 @@ public class FurniturePlaceManager : MonoBehaviour
                             //textElement.text += _object.name == object_static_name+"(Clone)" ? "\nCorrect object intantiated.(Passed)" : "\nWrong Object Instantiate(Fail)";
                             if (_object.name == object_static_name + "(Clone)")
                             {
-                                textElement.text += "\nCorrect object intantiated.";
+                             //   textElement.text += "\nCorrect object intantiated.";
                                 SaveMetamorphDataName("\nCorrect object intantiated." + obj_num, _object.name, object_static_name);
                             }
                             else
                             {
-                                textElement.text += "\nWrong Object Instantiate.";
+                               // textElement.text += "\nWrong Object Instantiate.";
                                 SaveMetamorphDataName("\nWrong Object Instantiate" + obj_num, _object.name, object_static_name);
                             }
                         }
@@ -223,6 +249,41 @@ public class FurniturePlaceManager : MonoBehaviour
         
     }
 
+
+    private void OnEnable()
+    {
+        arCameraManager.frameReceived += FrameUpdated;
+    }
+
+    private void OnDisable()
+    {
+        arCameraManager.frameReceived -= FrameUpdated;
+    }
+
+
+    private void FrameUpdated(ARCameraFrameEventArgs args)
+    {
+        if (args.lightEstimation.averageBrightness.HasValue)
+        {
+            lightEstimationData.averageBrightness = args.lightEstimation.averageBrightness.Value;
+            UpdateLighting();
+        }
+
+        // Optionally handle averageColorTemperature, colorCorrection, etc.
+    }
+
+    private void UpdateLighting()
+    {
+        // Adjust the lighting of the scene or objects based on lightEstimationData
+        // For example, adjust the intensity of your scene's light source
+        Light mainLight = FindObjectOfType<Light>(); // Assuming you have a main light in your scene
+        if (mainLight != null && lightEstimationData.averageBrightness.HasValue)
+        {
+            mainLight.intensity = lightEstimationData.averageBrightness.Value;
+        }
+
+
+    }
 
     private bool IsObjectAtPosition(Vector3 position)
     {
@@ -277,7 +338,7 @@ public class FurniturePlaceManager : MonoBehaviour
     {
         //textElement.text += "\nbefore it";
 
-        string path = Application.persistentDataPath + "/PlayerData_collision_new.txt";
+        string path = Application.persistentDataPath + "/PlayerData_collision_complete_new.txt";
         // This text is added only once to the file.
         if (!File.Exists(path))
         {
@@ -304,7 +365,7 @@ public class FurniturePlaceManager : MonoBehaviour
 
     public void SaveMetamorphDataName(string s,string v, string u)
     {
-        string path = Application.persistentDataPath + "/PlayerData_collision_new.txt";
+        string path = Application.persistentDataPath + "/PlayerData_collision_complete_new.txt";
 
         if (!File.Exists(path))
         {
@@ -347,10 +408,11 @@ public class FurniturePlaceManager : MonoBehaviour
     }
     public void SwitchFurniture(GameObject furniture)
     {
+        
         SpawnableFurniture = furniture;
-        extraspawnobject.Add(SpawnableFurniture);
+        //extraspawnobject.Add(SpawnableFurniture);
         //set real spawnableobject variable
-        object_static_name = SpawnableFurniture.name;
+        //object_static_name = SpawnableFurniture.name;
         int second_rand = Random.Range(0, 2);
         if(second_rand == 0) { SpawnableFurniture = extraspawnobject[Random.Range(0, extraspawnobject.Count)]; }
         
@@ -360,13 +422,13 @@ public class FurniturePlaceManager : MonoBehaviour
 
     private void CheckVisibleObjectsFromViewpoint(Vector3 viewpoint)
     {
-        textElement.text += "\nInside CheckVisibleObjectsFromViewpoint";
+        //textElement.text += "\nInside CheckVisibleObjectsFromViewpoint";
 
-        textElement.text += $"\n{extraspawnobject.Count}";
+        //textElement.text += $"\n{extraspawnobject.Count}";
         
         foreach (var obj in extraspawnobject)
         {
-            textElement.text += "\nInside the for loop of checkvisible";
+          //  textElement.text += "\nInside the for loop of checkvisible";
             if (IsObjectVisibleFromViewpoint(obj, viewpoint))
             {
                 // This object is visible from the viewpoint
@@ -376,6 +438,10 @@ public class FurniturePlaceManager : MonoBehaviour
 
                 SaveMetamorphDataName("\nCan see object" + obj_num, "", "");
             }
+            else
+            {
+                SaveMetamorphDataName("\nOccluded object" + obj_num, "", "");
+            }
         }
     }
 
@@ -383,18 +449,31 @@ public class FurniturePlaceManager : MonoBehaviour
     {
         RaycastHit hit;
         Vector3 direction = obj.transform.position - viewpoint;
-        textElement.text += "\nInside IsObjectVisibleFromViewpoint";
+        //textElement.text += "\nInside IsObjectVisibleFromViewpoint";
         if (Physics.Raycast(viewpoint, direction, out hit))
         {
-            textElement.text += "\nInside 1st if";
+            //textElement.text += "\nInside 1st if";
+          //  textElement.text += $"\n{hit.collider.gameObject.name} and {obj.name}";
+            
             if (hit.collider.gameObject == obj)
             {
-                textElement.text += "\nInside 2nd if";
+            //    textElement.text += "\nInside 2nd if";
                 // Object is visible (not obstructed)
                 return true;
             }
         }
         // Object is not visible (obstructed or too far)
         return false;
+    }
+
+    public void ExitApplication()
+    {
+        // Exit the application
+        Application.Quit();
+
+        // If you are running in the Unity Editor
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }
