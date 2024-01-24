@@ -24,11 +24,11 @@ Here, I have implemented the following MR.
 
 
 3. Visibility and Occlusion:
-     Test Input: Place an object partially behind a real-world object.
-     Expected Output: Part of the virtual object is occluded by the real-world object.
-     Transformation: Move the camera to view the object from different angles.
-     Expected Transformed Output: The occlusion should adjust correctly as the perspective changes.
-     Implementation: Use depth sensing and spatial mapping to understand the environment and manage occlusion realistically.
+     1. Test Input: Place an object partially behind a real-world object.
+     2. Expected Output: Part of the virtual object is occluded by the real-world object.
+     3. Transformation: Move the camera to view the object from different angles.
+     4. Expected Transformed Output: The occlusion should adjust correctly as the perspective changes.
+     5. Implementation: Use depth sensing and spatial mapping to understand the environment and manage occlusion realistically.
 
 4. Object Scaling with Distance:
      Test Input: Place a spawn object at a known distance.
@@ -38,10 +38,10 @@ Here, I have implemented the following MR.
      Implementation: Calculate the distance between the camera and the object and adjust the scale of the object accordingly.
 
 5. Orientation Consistency Relative to Gravity:
-     Test Input: Place an object with a specific orientation relative to gravity.
-     Expected Output: Object maintains its orientation (e.g., upright) relative to gravity.
-     Transformation: Rotate or tilt the AR device.
-     Expected Transformed Output: The object should adjust its orientation to maintain consistency relative to gravity.
+     1. Test Input: Place an object with a specific orientation relative to gravity.
+     2. Expected Output: Object maintains its orientation (e.g., upright) relative to gravity.
+     3. Transformation: Rotate or tilt the AR device.
+     4. Expected Transformed Output: The object should adjust its orientation to maintain consistency relative to gravity.
 
 6. Detected MR(Virtual physics and interaction)
    1. Varying rotation in constant-
@@ -50,7 +50,7 @@ Here, I have implemented the following MR.
    4. Transformation: change the initial angle and speed
    5. Expected Transformed Output: If the rotation is moving in constant, the rotation angle should be within specific threshold.
 7. Check correct object instantiation-
-   Input- Touch on screen
-   Expected output- Touch object and instantiate object should be same
+   1. Input- Touch on screen
+   2. Expected output- Touch object and instantiate object should be same
 
 
